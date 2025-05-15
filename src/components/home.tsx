@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Search, Filter, Heart, Leaf, Info, ShoppingBag } from "lucide-react";
+import {
+  Search,
+  Filter,
+  Heart,
+  Leaf,
+  Info,
+  ShoppingBag,
+  MessageCircle,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import {
@@ -18,6 +26,12 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Badge } from "./ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
 import HerbGrid from "./HerbGrid";
 import FavoritesList from "./FavoritesList";
 
@@ -44,7 +58,7 @@ const HomePage = () => {
       name: "Lavender",
       description: "Known for its calming properties and pleasant aroma.",
       image:
-        "https://images.unsplash.com/photo-1528722828814-77b9b83aafb2?w=800&q=80",
+        "https://elhhfkmuivqbgrbennmo.supabase.co/storage/v1/object/public/herb.images//lavender-.jpg",
       benefits: ["Relaxation", "Sleep aid", "Anxiety relief"],
       category: "Aromatic",
     });
@@ -59,7 +73,7 @@ const HomePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9f6] flex flex-col">
+    <div className="min-h-screen bg-[#f8f9f6] flex flex-col relative">
       {/* Hero Section */}
       <div className="bg-[#2c5530] text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1589927986089-35812388d1f4?w=1200&q=80')] opacity-20 bg-cover bg-center" />
@@ -211,7 +225,12 @@ const HomePage = () => {
                     ))}
                   </div>
                 </div>
-                <Button className="bg-green-700 hover:bg-green-800 text-white">
+                <Button
+                  className="bg-green-700 hover:bg-green-800 text-white flex items-center gap-1"
+                  onClick={() =>
+                    (window.location.href = `/herb/${featuredHerb.id}`)
+                  }
+                >
                   View Details
                 </Button>
               </div>
@@ -256,25 +275,139 @@ const HomePage = () => {
             Explore by Category
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {filterCategories.slice(1).map((category) => (
-              <div
-                key={category.value}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => handleFilterChange(category.value)}
-              >
-                <div className="h-32 bg-green-100 flex items-center justify-center">
-                  <Leaf className="h-12 w-12 text-green-600" />
+            {filterCategories.slice(1).map((category) => {
+              // Custom icon based on category
+              let CategoryIcon = Leaf;
+              let iconDescription = "Herb leaf icon";
+              let bgColor = "bg-green-100";
+
+              if (category.value === "medicinal") {
+                CategoryIcon = () => (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="48"
+                    height="48"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-green-600"
+                    aria-hidden="true"
+                  >
+                    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+                  </svg>
+                );
+                iconDescription = "Medicinal herb mortar and pestle icon";
+                bgColor = "bg-green-100";
+              } else if (category.value === "culinary") {
+                CategoryIcon = () => (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="48"
+                    height="48"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-green-600"
+                    aria-hidden="true"
+                  >
+                    <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+                    <path d="M7 2v20" />
+                    <path d="M21 15V2" />
+                    <path d="M18 15V2" />
+                    <path d="M21 8h-3" />
+                    <path d="M21 5h-3" />
+                    <path d="M21 11h-3" />
+                    <path d="M10 15.5c0 1.7 1.3 3 3 3h1c1.7 0 3-1.3 3-3v-2c0-.6-.4-1-1-1h-5c-.6 0-1 .4-1 1v2z" />
+                  </svg>
+                );
+                iconDescription = "Culinary herbs and utensils icon";
+                bgColor = "bg-amber-50";
+              } else if (category.value === "aromatic") {
+                CategoryIcon = () => (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="48"
+                    height="48"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-green-600"
+                    aria-hidden="true"
+                  >
+                    <path d="M10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14Z" />
+                    <path d="m21 21-6.05-6.05" />
+                    <path d="M10 13V7" />
+                    <path d="M7 10h6" />
+                  </svg>
+                );
+                iconDescription = "Aromatic essential oil icon";
+                bgColor = "bg-purple-50";
+              } else if (category.value === "decorative") {
+                CategoryIcon = () => (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="48"
+                    height="48"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-green-600"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 7.5a4.5 4.5 0 1 1 4.5 4.5M12 7.5A4.5 4.5 0 1 0 7.5 12M12 7.5V9m-4.5 3a4.5 4.5 0 1 0 4.5 4.5M7.5 12H9m3 4.5a4.5 4.5 0 1 0 4.5-4.5M12 16.5V15m4.5-3H15" />
+                  </svg>
+                );
+                iconDescription = "Decorative flower icon";
+                bgColor = "bg-rose-50";
+              }
+
+              return (
+                <div
+                  key={category.value}
+                  className={`bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg hover:translate-y-[-5px] hover:bg-green-50 focus-within:ring-2 focus-within:ring-green-500 focus-within:outline-none`}
+                  onClick={() => handleFilterChange(category.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleFilterChange(category.value);
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`View ${category.label} herbs`}
+                >
+                  <div
+                    className={`h-32 ${bgColor} flex items-center justify-center relative overflow-hidden`}
+                  >
+                    <div
+                      className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1589927986089-35812388d1f4?w=800&q=80')] bg-cover bg-center"
+                      aria-hidden="true"
+                    />
+                    <CategoryIcon />
+                  </div>
+                  <div className="p-4 text-center">
+                    <h3 className="font-medium text-green-800">
+                      {category.label} Herbs
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Explore our collection
+                    </p>
+                  </div>
                 </div>
-                <div className="p-4 text-center">
-                  <h3 className="font-medium text-green-800">
-                    {category.label} Herbs
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Explore our collection
-                  </p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -387,6 +520,30 @@ const HomePage = () => {
           </div>
         </div>
       </footer>
+
+      {/* Floating Chatbot Button */}
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <a
+              href="/chatbot"
+              className="fixed bottom-6 right-6 bg-green-700 hover:bg-green-800 text-white p-4 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-105 z-50 border-2 border-green-200"
+              aria-label="Open herb wisdom chatbot"
+            >
+              <div className="relative">
+                <MessageCircle className="h-6 w-6" />
+                <Leaf className="h-3 w-3 absolute -top-1 -right-1 text-green-300" />
+              </div>
+            </a>
+          </TooltipTrigger>
+          <TooltipContent
+            side="left"
+            className="bg-green-800 text-white border-green-700"
+          >
+            <p>Ask our Herb Wisdom Chatbot</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 };

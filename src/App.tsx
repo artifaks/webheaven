@@ -11,18 +11,14 @@ const ChatbotPage = lazy(() => import("./pages/chatbot"));
 function App() {
   return (
     <Suspense fallback={<p>Loading...</p>}>
-      <>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/herb/:id" element={<HerbDetailPage />} />
-          <Route path="/affiliate" element={<AffiliatePage />} />
-          <Route path="/chatbot" element={<ChatbotPage />} />
-          {import.meta.env.VITE_TEMPO === "true" && (
-            <Route path="/tempobook/*" />
-          )}
-        </Routes>
-        {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
-      </>
+      {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/herb/:id" element={<HerbDetailPage />} />
+        <Route path="/affiliate" element={<AffiliatePage />} />
+        <Route path="/chatbot" element={<ChatbotPage />} />
+        {import.meta.env.VITE_TEMPO === "true" && <Route path="/tempobook/*" />}
+      </Routes>
     </Suspense>
   );
 }

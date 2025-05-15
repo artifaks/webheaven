@@ -37,9 +37,15 @@ const HerbCard = ({
       <Link to={`/herb/${id}`} className="flex-grow flex flex-col">
         <div className="relative h-48 overflow-hidden">
           <img
-            src={image}
-            alt={name}
+            src={
+              image ||
+              `https://elhhfkmuivqbgrbennmo.supabase.co/storage/v1/object/public/herb.images/${name.toLowerCase().replace(/\s+/g, "-")}.jpg`
+            }
+            alt={`${name} - ${description.substring(0, 50)}${description.length > 50 ? "..." : ""}`}
             className="w-full h-full object-cover transition-transform hover:scale-105"
+            onError={(e) => {
+              e.currentTarget.src = `https://images.unsplash.com/photo-1589927986089-35812388d1f4?w=400&q=80`;
+            }}
           />
         </div>
         <CardHeader className="pb-2">
@@ -92,7 +98,15 @@ const HerbCard = ({
           </div>
         </CardContent>
       </Link>
-      <CardFooter className="pt-2 border-t border-gray-100">
+      <CardFooter className="pt-2 border-t border-gray-100 flex justify-between">
+        <Button
+          variant="default"
+          size="sm"
+          className="bg-green-700 hover:bg-green-800 text-white flex items-center gap-1"
+          asChild
+        >
+          <Link to={`/herb/${id}`}>View Details</Link>
+        </Button>
         <Button
           variant="ghost"
           size="sm"

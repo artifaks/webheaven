@@ -11,6 +11,15 @@ import {
 import { supabase } from "@/lib/supabase";
 import type { Herb } from "@/types/herb";
 import { Loader2 } from "lucide-react";
+import { Badge } from "./ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 interface HerbGridProps {
   searchTerm?: string;
@@ -59,6 +68,13 @@ const HerbGrid = ({
         }
 
         console.log("Herbs data received:", data);
+        // Log the image URLs to help with debugging
+        if (data && data.length > 0) {
+          console.log("Sample herb image fields:", {
+            image: data[0].image,
+            image_url: data[0].image_url,
+          });
+        }
 
         // If no data, use mock data for development
         if (!data || data.length === 0) {
@@ -107,13 +123,22 @@ const HerbGrid = ({
           id: herb.id,
           name: herb.name,
           description: herb.description,
-          image: herb.image_url,
+          image:
+            herb.image_url ||
+            herb.image ||
+            `https://elhhfkmuivqbgrbennmo.supabase.co/storage/v1/object/public/herb.images/${herb.name.toLowerCase().replace(/\s+/g, "-")}.jpg`,
           benefits: herb.benefits
             ? Array.isArray(herb.benefits)
               ? herb.benefits
               : [String(herb.benefits)]
             : [],
           category: herb.category,
+          growingDifficulty: herb.growing_difficulty,
+          usageInstructions: herb.usage_instructions,
+          harvestSeason: herb.harvest_season,
+          scientificName: herb.scientific_name,
+          family: herb.family,
+          nativeRegion: herb.native_region,
           isFavorite: favorites.includes(herb.id),
         }));
 

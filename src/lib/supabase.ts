@@ -8,4 +8,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.error("Missing Supabase environment variables");
 }
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+// Create a fallback for development if environment variables are missing
+const url = supabaseUrl || "https://your-project-url.supabase.co";
+const key = supabaseAnonKey || "your-anon-key";
+
+export const supabase = createClient<Database>(url, key);
